@@ -14,6 +14,7 @@ function HomePage() {
 
   const queryParams = new URLSearchParams(location.search);
   const is_closed = queryParams.get("is_closed") || "";
+  const { authLogin = null } = useSelector((states) => states);
 
   const dispatch = useDispatch();
 
@@ -38,6 +39,11 @@ function HomePage() {
   return (
     <section>
       <div className="container pt-1">
+      <div className="card">
+          <div className="card-body">
+            <h3>Hello, {authLogin.name}! Welcome to Aucation Website!</h3>
+          </div>
+        </div>
         <TodoList
           aucations={aucations}
           onDeleteAucation={onDeleteAucation}
