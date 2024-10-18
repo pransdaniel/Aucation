@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { postedAt } from "../utils/tools";
 import { FaClock, FaTrash } from "react-icons/fa6";
 
-function TodoItem({ todo, onDeleteTodo }) {
+function AucationItem({ aucation, onDeleteAucation }) {
   let badgeStatus, badgeLabel;
-  if (todo.is_finished) {
+  if (aucation.is_closed) {
     badgeStatus = "badge bg-success text-white ms-3";
     badgeLabel = "Selesai";
   } else {
@@ -19,8 +19,8 @@ function TodoItem({ todo, onDeleteTodo }) {
         <div className="row align-items-center">
           <div className="col-8 d-flex">
             <h5>
-              <Link to={`/todos/${todo.id}`} className="text-primary">
-                {todo.title}
+              <Link to={`/aucations/${aucation.id}`} className="text-primary">
+                {aucation.title}
               </Link>
             </h5>
 
@@ -36,7 +36,7 @@ function TodoItem({ todo, onDeleteTodo }) {
                 // eslint-disable-next-line no-undef
                 Swal.fire({
                   title: "Hapus Aucation",
-                  text: `Apakah kamu yakin ingin mehapus Aucation: ${todo.title}?`,
+                  text: `Apakah kamu yakin ingin mehapus Aucation: ${aucation.title}?`,
                   icon: "warning",
                   showCancelButton: true,
                   confirmButtonText: "Ya, Tetap Hapus",
@@ -47,7 +47,7 @@ function TodoItem({ todo, onDeleteTodo }) {
                   buttonsStyling: false,
                 }).then((result) => {
                   if (result.isConfirmed) {
-                    onDeleteTodo(todo.id);
+                    onDeleteAucation(aucation.id);
                   }
                 });
               }}
@@ -59,7 +59,7 @@ function TodoItem({ todo, onDeleteTodo }) {
           <div className="col-12">
             <div className="text-sm op-5">
               <FaClock />
-              <span className="ps-2">{postedAt(todo.created_at)}</span>
+              <span className="ps-2">{postedAt(aucation.created_at)}</span>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ function TodoItem({ todo, onDeleteTodo }) {
   );
 }
 
-const todoItemShape = {
+const aucationItemShape = {
   id: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   is_finished: PropTypes.number.isRequired,
@@ -77,12 +77,12 @@ const todoItemShape = {
   updated_at: PropTypes.string.isRequired,
 };
 
-TodoItem.propTypes = {
-  todo: PropTypes.shape(todoItemShape).isRequired,
-  onDeleteTodo: PropTypes.func.isRequired,
+AucationItem.propTypes = {
+  aucation: PropTypes.shape(aucationItemShape).isRequired,
+  onDeleteAucation: PropTypes.func.isRequired,
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export { todoItemShape };
+export { aucationItemShape };
 
-export default TodoItem;
+export default AucationItem;

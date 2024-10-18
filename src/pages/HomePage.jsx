@@ -4,19 +4,21 @@ import TodoList from "../components/TodoList";
 import {
   asyncGetAucations,
   asyncDeleteTodo,
-  deleteTodoActionCreator,
+  deleteAucationActionCreator,
 } from "../states/todos/action";
 
 function HomePage() {
-  const { todos = [], isDeleteTodo = false } = useSelector((states) => states);
+  const { aucations = [], isDeleteAucation = false } = useSelector(
+    (states) => states
+  );
 
   const queryParams = new URLSearchParams(location.search);
-  const is_finished = queryParams.get("is_finished") || "";
+  const is_closed = queryParams.get("is_closed") || "";
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isDeleteTodo) {
+    if (isDeleteAucation) {
       // eslint-disable-next-line no-undef
       Swal.fire({
         icon: "success",
@@ -24,10 +26,10 @@ function HomePage() {
         showConfirmButton: false,
         timer: 700,
       });
-      dispatch(deleteTodoActionCreator(false));
+      dispatch(deleteAucationActionCreator(false));
     }
-    dispatch(asyncGetAucations(is_finished));
-  }, [dispatch, isDeleteTodo, is_finished]);
+    dispatch(asyncGetAucations(is_closed));
+  }, [dispatch, isDeleteAucation, is_closed]);
 
   const onDeleteTodo = (id) => {
     dispatch(asyncDeleteTodo(id));

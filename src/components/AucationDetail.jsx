@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { todoItemShape } from "./TodoItem";
+import { todoItemShape } from "./AucationItem";
 import { postedAt } from "../utils/tools";
 import { FaClock, FaPenToSquare, FaUpload } from "react-icons/fa6";
 import api from "../utils/api";
@@ -54,7 +54,7 @@ function AucationDetail({ aucation, onEditTodo }) {
         cover: file,
       });
       console.log("Cover updated:", message);
-      dispatch(asyncDetailTodo(todo.id)); // Refresh the todo after upload
+      dispatch(asyncDetailAucation(todo.id)); // Refresh the todo after upload
     } catch (error) {
       console.error("Failed to upload cover:", error.message);
     }

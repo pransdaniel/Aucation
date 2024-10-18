@@ -5,9 +5,9 @@ import { showErrorDialog } from "../../utils/tools";
 const ActionType = {
   GET_AUCATIONS: "GET_AUCATIONS",
   ADD_AUCATION: "ADD_AUCATION",
-  DELETE_TODO: "DELETE_TODO",
+  DELETE_AUCATION: "DELETE_AUCATION",
   DETAIL_AUCATION: "DETAIL_AUCATION",
-  EDIT_TODO: "EDIT_TODO",
+  EDIT_AUCATION: "EDIT_AUCATION",
 };
 
 function getAucationsActionCreator(aucations) {
@@ -28,18 +28,18 @@ function addAucationActionCreator(status) {
   };
 }
 
-function deleteTodoActionCreator(status) {
+function deleteAucationActionCreator(status) {
   return {
-    type: ActionType.DELETE_TODO,
+    type: ActionType.DELETE_AUCATION,
     payload: {
       status,
     },
   };
 }
 
-function editTodoActionCreator(status) {
+function editAucationActionCreator(status) {
   return {
-    type: ActionType.EDIT_TODO,
+    type: ActionType.EDIT_AUCATION,
     payload: {
       todo,
     },
@@ -90,11 +90,11 @@ function asyncGetAucations() {
   };
 }
 
-function asyncAddAucation({ title, description }) {
+function asyncAddAucation({ cover, title, description }) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      await api.postAddAucation({ title, description });
+      await api.postAddAucation({ cover, title, description });
       dispatch(asyncAddAucation(true));
     } catch (error) {
       showErrorDialog(error.message);
@@ -103,12 +103,12 @@ function asyncAddAucation({ title, description }) {
   };
 }
 
-function asyncDeleteTodo(id) {
+function asyncDeleteAucation(id) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
       await api.deleteTodo(id);
-      dispatch(deleteTodoActionCreator(true));
+      dispatch(deleteAucationActionCreator(true));
     } catch (error) {
       showErrorDialog(error.message);
     }
@@ -116,13 +116,13 @@ function asyncDeleteTodo(id) {
   };
 }
 
-function asyncEditTodo(id, title, description, is_finished) {
+function asyncEditAucation(id, title, description, is_closed) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      await api.putUpdateTodo({ id, title, description, is_finished });
+      await api.putUpdateAucation({ id, title, description, is_finished });
 
-      const updatedTodo = await api.getDetailAucation(id);
+      const updatedAucation = await api.getDetailAucation(id);
 
       dispatch(detailAucationActionCreator(updatedTodo));
     } catch (error) {
@@ -136,8 +136,8 @@ function asyncDetailAucation(id) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      const aucations = await api.getDetailAucation(id);
-      dispatch(detailAucationActionCreator(aucations));
+      const aucation = await api.getDetailAucation(id);
+      dispatch(detailAucationActionCreator(aucation));
     } catch (error) {
       showErrorDialog(error.message);
     }
@@ -151,10 +151,10 @@ export {
   asyncGetAucations,
   addAucationActionCreator,
   asyncAddAucation,
-  deleteTodoActionCreator,
+  deleteAucationActionCreator,
   asyncDeleteTodo,
-  editTodoActionCreator,
-  asyncEditTodo,
+  editAucationActionCreator,
+  asyncEditAucation,
   detailAucationActionCreator,
   asyncDetailAucation,
   changeCoverTodoActionCreator,

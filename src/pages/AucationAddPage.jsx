@@ -27,8 +27,8 @@ function AucationAddPage() {
     }
   }, [isAddAucation, navigate, dispatch]);
 
-  const onAddAucation = ({ title, description }) => {
-    dispatch(asyncAddAucation({ title, description }));
+  const onAddAucation = ({ cover, title, description }) => {
+    dispatch(asyncAddAucation({ cover, title, description }));
   };
 
   return (

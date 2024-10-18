@@ -1,19 +1,23 @@
 import PropTypes from "prop-types";
-import TodoItem, { todoItemShape } from "./TodoItem";
+import AucationItem, { aucationItemShape } from "./AucationItem";
 
-function TodoList({ todos, onDeleteTodo }) {
+function AucationList({ aucations, onDeleteAucation }) {
   return (
     <div>
-      {todos.map((todo) => (
-        <TodoItem key={todo.id} todo={todo} onDeleteTodo={onDeleteTodo} />
+      {aucations.map((aucation) => (
+        <AucationItem
+          key={aucation.id}
+          aucation={aucation}
+          onDeleteAucation={onDeleteAucation}
+        />
       ))}
     </div>
   );
 }
 
-TodoList.propTypes = {
-  todos: PropTypes.arrayOf(PropTypes.shape(todoItemShape)).isRequired,
-  onDeleteTodo: PropTypes.func.isRequired,
+AucationList.propTypes = {
+  aucations: PropTypes.arrayOf(PropTypes.shape(aucationItemShape)).isRequired,
+  onDeleteAucation: PropTypes.func.isRequired,
 };
 
-export default TodoList;
+export default AucationList;

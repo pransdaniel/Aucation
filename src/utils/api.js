@@ -96,8 +96,11 @@ const api = (() => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        cover,
         title,
         description,
+        start_bid,
+        closed_at,
       }),
     });
     const responseJson = await response.json();
@@ -126,8 +129,24 @@ const api = (() => {
     return message;
   }
 
-  async function putUpdateTodo({ id, title, description, is_finished }) {
-    console.log("Updating todo:", { id, title, description, is_finished });
+  async function putUpdateAucation({
+    cover,
+    id,
+    title,
+    description,
+    start_bid,
+    closed_at,
+    is_closed,
+  }) {
+    console.log("Updating todo:", {
+      cover,
+      id,
+      title,
+      description,
+      start_bid,
+      closed_at,
+      is_closed,
+    });
 
     const response = await _fetchWithAuth(`${BASE_URL}/aucation/${id}`, {
       method: "PUT",
@@ -135,9 +154,11 @@ const api = (() => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        cover,
         title,
         description,
-        is_finished,
+        start_bid,
+        closed_at,
       }),
     });
 
@@ -152,7 +173,7 @@ const api = (() => {
     return message;
   }
 
-  async function deleteTodo(id) {
+  async function deleteAucation(id) {
     const response = await _fetchWithAuth(`${BASE_URL}/aucation/${id}`, {
       method: "DELETE",
       headers: {
@@ -203,8 +224,8 @@ const api = (() => {
     postChangePhotoProfile,
     postAddAucation,
     postChangeCoverTodo,
-    putUpdateTodo,
-    deleteTodo,
+    putUpdateAucation,
+    deleteAucation,
     getAllAucations,
     getDetailAucation,
   };
