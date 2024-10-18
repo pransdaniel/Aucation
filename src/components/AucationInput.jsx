@@ -6,62 +6,67 @@ function AucationInput({ onAddAucation }) {
   const [description, setDescription] = useState("");
   const [startBid, setStartBid] = useState("");
   const [closedAt, setClosedAt] = useState("");
-  const [cover, setCover] = useState(null); // Untuk menyimpan file gambar
-  const [previewCover, setPreviewCover] = useState(null); // Untuk menampilkan pratinjau gambar
+  const [cover, setCover] = useState(null);  // Menyimpan file cover
+  const [previewCover, setPreviewCover] = useState(null);  // Pratinjau gambar cover
 
+  // Fungsi yang akan dijalankan ketika form disubmit
   function handleOnAddAucation(e) {
-    e.preventDefault(); // Mencegah refresh halaman
+    e.preventDefault();  // Mencegah refresh halaman
+    // Validasi apakah semua field terisi
     if (title.trim() && description.trim() && startBid && closedAt && cover) {
       const aucationData = {
         title,
         description,
-        startBid: parseFloat(startBid), // Pastikan ini berupa angka
-        closedAt, // Tanggal sudah dalam format string ISO
-        cover, // Ini adalah objek File gambar
+        startBid: parseFloat(startBid),  // Konversi startBid ke angka
+        closedAt,  // Biarkan closedAt tetap sebagai string ISO
+        cover,  // Kirim file cover yang dipilih
       };
-      onAddAucation(aucationData);
+      onAddAucation(aucationData);  // Kirim data ke parent (AucationAddPage)
+    } else {
+      console.error("Form tidak valid, pastikan semua field diisi dengan benar.");
     }
   }
 
+  // Handler untuk title input
   function handleTitle({ target }) {
-    if (target.value.length <= 50) {
-      setTitle(target.value);
-    }
+    setTitle(target.value);
   }
 
+  // Handler untuk description input
   function handleDescription({ target }) {
-    if (target.value.length <= 1000) {
-      setDescription(target.value);
-    }
+    setDescription(target.value);
   }
 
+  // Handler untuk start bid input
   function handleStartBid({ target }) {
     setStartBid(target.value);
   }
 
+  // Handler untuk closed at input
   function handleClosedAt({ target }) {
     setClosedAt(target.value);
   }
 
+  // Handler untuk cover input (file gambar)
   function handleCover({ target }) {
     const file = target.files[0];
     if (file) {
-      setCover(file); // Simpan file gambar
+      setCover(file);  // Simpan file ke state
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewCover(reader.result); // Set gambar pratinjau
+        setPreviewCover(reader.result);  // Set pratinjau gambar
       };
-      reader.readAsDataURL(file); // Konversi gambar untuk pratinjau
+      reader.readAsDataURL(file);  // Konversi gambar untuk pratinjau
     }
   }
 
   return (
     <div className="card">
       <div className="card-body">
-        <h3 className="ps-2">Tambahkan Aucations</h3>
+        <h3 className="ps-2">Tambahkan Aucation</h3>
         <hr />
         <form onSubmit={handleOnAddAucation}>
-          {/* Input untuk Cover */}
+          {/* Preview Cover */}
           <div
             style={{
               width: "100%",
@@ -92,10 +97,9 @@ function AucationInput({ onAddAucation }) {
             )}
           </div>
 
+          {/* Upload Cover */}
           <div className="mb-3">
-            <label htmlFor="inputCover" className="form-label">
-              Upload Cover Image
-            </label>
+            <label htmlFor="inputCover" className="form-label">Upload Cover Image</label>
             <input
               type="file"
               id="inputCover"
@@ -106,11 +110,9 @@ function AucationInput({ onAddAucation }) {
             />
           </div>
 
-          {/* Input untuk Judul */}
+          {/* Title Input */}
           <div className="mb-3">
-            <label htmlFor="inputTitle" className="form-label">
-              Judul
-            </label>
+            <label htmlFor="inputTitle" className="form-label">Judul</label>
             <div className="input-group">
               <input
                 type="text"
@@ -124,11 +126,9 @@ function AucationInput({ onAddAucation }) {
             </div>
           </div>
 
-          {/* Input untuk Deskripsi */}
+          {/* Description Input */}
           <div>
-            <label htmlFor="inputDescription" className="form-label">
-              Deskripsi
-            </label>
+            <label htmlFor="inputDescription" className="form-label">Deskripsi</label>
             <textarea
               rows="5"
               id="inputDescription"
@@ -137,16 +137,12 @@ function AucationInput({ onAddAucation }) {
               className="form-control"
               required
             ></textarea>
-            <div className="text-end">
-              <span>{description.length}/1000</span>
-            </div>
+            <div className="text-end">{description.length}/1000</div>
           </div>
 
-          {/* Input untuk Start Bid */}
+          {/* Start Bid Input */}
           <div className="mb-3">
-            <label htmlFor="inputStartBid" className="form-label">
-              Start Bid (in numbers)
-            </label>
+            <label htmlFor="inputStartBid" className="form-label">Start Bid (in numbers)</label>
             <input
               type="number"
               id="inputStartBid"
@@ -157,11 +153,9 @@ function AucationInput({ onAddAucation }) {
             />
           </div>
 
-          {/* Input untuk Closed At */}
+          {/* Closed At Input */}
           <div className="mb-3">
-            <label htmlFor="inputClosedAt" className="form-label">
-              Closed At
-            </label>
+            <label htmlFor="inputClosedAt" className="form-label">Closed At</label>
             <input
               type="datetime-local"
               id="inputClosedAt"
@@ -172,11 +166,9 @@ function AucationInput({ onAddAucation }) {
             />
           </div>
 
-          {/* Tombol Simpan */}
+          {/* Submit Button */}
           <div className="mb-4 text-end mt-3">
-            <button type="submit" className="btn btn-primary">
-              Simpan
-            </button>
+            <button type="submit" className="btn btn-primary">Simpan</button>
           </div>
         </form>
       </div>

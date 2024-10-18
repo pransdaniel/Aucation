@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { postedAt } from "../utils/tools";
-import { FaClock, FaTrash } from "react-icons/fa6";
+import { FaClock, FaTrash, FaGavel } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 // Define aucationItemShape
 const aucationItemShape = {
@@ -17,7 +18,7 @@ const aucationItemShape = {
 // Ensure aucationItemShape is exported
 export { aucationItemShape };
 
-function AucationItem({ aucation, onDeleteAucation }) {
+function AucationItem({ aucation, onDeleteAucation, onAddBid }) {
   let badgeStatus, badgeLabel;
   if (aucation.is_closed) {
     badgeStatus = "badge bg-success text-white ms-3";
@@ -26,6 +27,28 @@ function AucationItem({ aucation, onDeleteAucation }) {
     badgeStatus = "badge bg-warning text-dark ms-3";
     badgeLabel = "Belum Selesai";
   }
+
+  const handleAddBid = () => {
+    Swal.fire({
+      title: 'Tambah Bid',
+      input: 'number',
+      inputLabel: 'Masukkan jumlah bid',
+      inputAttributes: {
+        min: aucation.start_bid,
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Bid',
+      showLoaderOnConfirm: true,
+      preConfirm: (amount) => {
+        if (!amount || amount < aucation.start_bid) {
+          Swal.showValidationMessage(`Jumlah bid harus lebih dari ${aucation.start_bid}`);
+          return;
+        }
+        return onAddBid(aucation.id, parseFloat(amount));
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    });
+  };
 
   return (
     <div className="card mt-3">
@@ -46,7 +69,6 @@ function AucationItem({ aucation, onDeleteAucation }) {
             <button
               type="button"
               onClick={() => {
-                // eslint-disable-next-line no-undef
                 Swal.fire({
                   title: "Hapus Aucation",
                   text: `Apakah kamu yakin ingin menghapus Aucation: ${aucation.title}?`,
@@ -67,6 +89,13 @@ function AucationItem({ aucation, onDeleteAucation }) {
               className="btn btn-sm btn-outline-danger"
             >
               <FaTrash /> Hapus
+            </button>
+            <button
+              type="button"
+              onClick={handleAddBid}
+              className="btn btn-sm btn-outline-primary ms-2"
+            >
+              <FaGavel /> Bid
             </button>
           </div>
 
@@ -98,6 +127,7 @@ function AucationItem({ aucation, onDeleteAucation }) {
 AucationItem.propTypes = {
   aucation: PropTypes.shape(aucationItemShape).isRequired,
   onDeleteAucation: PropTypes.func.isRequired,
+  onAddBid: PropTypes.func.isRequired,
 };
 
 export default AucationItem;

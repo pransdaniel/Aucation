@@ -1,5 +1,7 @@
 const api = (() => {
   const BASE_URL = "https://public-api.delcom.org/api/v1";
+  
+  // Helper untuk fetch dengan Auth
   async function _fetchWithAuth(url, options = {}) {
     return fetch(url, {
       ...options,
@@ -9,14 +11,16 @@ const api = (() => {
       },
     });
   }
+
   function putAccessToken(token) {
     localStorage.setItem("accessToken", token);
   }
+
   function getAccessToken() {
     return localStorage.getItem("accessToken");
   }
 
-  // API Auth => https://public-api.delcom.org/docs/1.0/api-auth
+  // Register API
   async function postAuthRegister({ name, email, password }) {
     const response = await fetch(`${BASE_URL}/auth/register`, {
       method: "POST",
@@ -31,12 +35,13 @@ const api = (() => {
     });
     const responseJson = await response.json();
     const { success, message } = responseJson;
-    if (success !== true) {
+    if (!success) {
       throw new Error(message);
     }
     return message;
   }
 
+  // Login API
   async function postAuthLogin({ email, password }) {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
@@ -50,29 +55,26 @@ const api = (() => {
     });
     const responseJson = await response.json();
     const { success, message } = responseJson;
-    if (success !== true) {
+    if (!success) {
       throw new Error(message);
     }
-    const {
-      data: { token },
-    } = responseJson;
+    const { data: { token } } = responseJson;
     return token;
   }
 
-  // API Users => https://public-api.delcom.org/docs/1.0/apiusers
+  // Get current user
   async function getMe() {
     const response = await _fetchWithAuth(`${BASE_URL}/users/me`);
     const responseJson = await response.json();
     const { success, message } = responseJson;
-    if (success !== true) {
+    if (!success) {
       throw new Error(message);
     }
-    const {
-      data: { user },
-    } = responseJson;
+    const { data: { user } } = responseJson;
     return user;
   }
 
+  // Upload profile photo
   async function postChangePhotoProfile({ photoFile }) {
     const formData = new FormData();
     formData.append("photo", photoFile);
@@ -82,53 +84,70 @@ const api = (() => {
     });
     const responseJson = await response.json();
     const { success, message } = responseJson;
-    if (success !== true) {
+    if (!success) {
       throw new Error(message);
     }
     return message;
   }
 
-  // API Todos => https://public-api.delcom.org/docs/1.0/apitodos
-  async function postAddAucation({ title, description }) {
+  // Add Aucation with FormData
+  async function postAddAucation({ title, description, start_bid, closed_at, cover }) {
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("start_bid", start_bid);
+    formData.append("closed_at", closed_at);
+    formData.append("cover", cover); // Menambahkan cover ke FormData
+
     const response = await _fetchWithAuth(`${BASE_URL}/aucations`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cover,
-        title,
-        description,
-        start_bid,
-        closed_at,
-      }),
+      body: formData, // Menggunakan FormData, jangan set Content-Type secara manual
     });
+
     const responseJson = await response.json();
-    const { success, message } = responseJson;
-    if (success !== true) {
-      throw new Error(message);
+    if (!responseJson.success) {
+      throw new Error(responseJson.message);
     }
-    const {
-      data: { aucation_id },
-    } = responseJson;
-    return aucation_id;
+
+    return responseJson.data.aucation_id;
   }
 
-  async function postChangeCoverTodo({ id, cover }) {
+  // Change Aucation Cover
+  async function postChangeCoverAucation({ id, cover }) {
     const formData = new FormData();
     formData.append("cover", cover);
-    const response = await _fetchWithAuth(`${BASE_URL}/todos/${id}/cover`, {
+    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${id}/cover`, {
       method: "POST",
       body: formData,
     });
     const responseJson = await response.json();
     const { success, message } = responseJson;
-    if (success !== true) {
+    if (!success) {
       throw new Error(message);
     }
     return message;
   }
 
+  // Add Bid to Aucation
+  async function postAddBid({ aucationId, amount }) {
+    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${aucationId}/bids`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount,
+      }),
+    });
+  
+    const responseJson = await response.json();
+    if (!responseJson.success) {
+      throw new Error(responseJson.message);
+    }
+    return responseJson.data;
+  }
+
+  // Update Aucation
   async function putUpdateAucation({
     cover,
     id,
@@ -138,81 +157,62 @@ const api = (() => {
     closed_at,
     is_closed,
   }) {
-    console.log("Updating todo:", {
-      cover,
-      id,
-      title,
-      description,
-      start_bid,
-      closed_at,
-      is_closed,
-    });
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("start_bid", start_bid);
+    formData.append("closed_at", closed_at);
+    formData.append("is_closed", is_closed);
+    if (cover instanceof File) {
+      formData.append("cover", cover); // Jika cover diupdate
+    }
 
-    const response = await _fetchWithAuth(`${BASE_URL}/aucation/${id}`, {
+    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cover,
-        title,
-        description,
-        start_bid,
-        closed_at,
-      }),
+      body: formData,
     });
 
     const responseJson = await response.json();
-    console.log("API response:", responseJson); // Log the entire API response
-
-    const { success, message } = responseJson;
-    if (success !== true) {
-      throw new Error(message); // Handle error message if success is false
+    if (!responseJson.success) {
+      throw new Error(responseJson.message);
     }
 
-    return message;
+    return responseJson.message;
   }
 
+  // Delete Aucation
   async function deleteAucation(id) {
-    const response = await _fetchWithAuth(`${BASE_URL}/aucation/${id}`, {
+    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
     });
     const responseJson = await response.json();
-    const { success, message } = responseJson;
-    if (success !== true) {
-      throw new Error(message);
+    if (!responseJson.success) {
+      throw new Error(responseJson.message);
     }
-    return message;
+    return responseJson.message;
   }
 
+  // Get all Aucations
   async function getAllAucations() {
     const response = await _fetchWithAuth(`${BASE_URL}/aucations`);
     const responseJson = await response.json();
-
-    const { success, message } = responseJson;
-    if (success !== true) {
-      throw new Error(message);
+    if (!responseJson.success) {
+      throw new Error(responseJson.message);
     }
-    const {
-      data: { aucations },
-    } = responseJson;
-    return aucations;
+    return responseJson.data.aucations;
   }
 
+  // Get Detail Aucation
   async function getDetailAucation(id) {
     const response = await _fetchWithAuth(`${BASE_URL}/aucations/${id}`);
     const responseJson = await response.json();
-    const { success, message } = responseJson;
-    if (success !== true) {
-      throw new Error(message);
+    if (!responseJson.success) {
+      throw new Error(responseJson.message);
     }
-    const {
-      data: { aucation },
-    } = responseJson;
-    return aucation;
+    return responseJson.data.aucation;
   }
 
   return {
@@ -223,7 +223,8 @@ const api = (() => {
     getMe,
     postChangePhotoProfile,
     postAddAucation,
-    postChangeCoverTodo,
+    postChangeCoverAucation,
+    postAddBid, // Tambahkan fungsi 
     putUpdateAucation,
     deleteAucation,
     getAllAucations,

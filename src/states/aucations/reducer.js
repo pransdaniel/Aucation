@@ -5,10 +5,20 @@ function aucationsReducer(aucations = [], action = {}) {
     case ActionType.GET_AUCATIONS:
       return action.payload.aucations;
 
-    case ActionType.EDIT_TODO:
+    case ActionType.EDIT_AUCATION:
       return aucations.map((aucation) =>
         aucation.id === action.payload.aucation.id
           ? action.payload.aucation
+          : aucation
+      );
+
+    case ActionType.ADD_BID:
+      return aucations.map((aucation) =>
+        aucation.id === action.payload.aucationId
+          ? {
+              ...aucation,
+              bids: [...aucation.bids, action.payload.newBid], // Update bid
+            }
           : aucation
       );
 

@@ -41,7 +41,7 @@ function editAucationActionCreator(status) {
   return {
     type: ActionType.EDIT_AUCATION,
     payload: {
-      todo,
+      status,
     },
   };
 }
@@ -90,12 +90,21 @@ function asyncGetAucations() {
   };
 }
 
-function asyncAddAucation({ cover, title, description }) {
+// Perbaikan pada asyncAddAucation untuk menangani FormData
+function asyncAddAucation({ cover, title, description, start_bid, closed_at }) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      await api.postAddAucation({ cover, title, description });
-      dispatch(asyncAddAucation(true));
+      const formData = new FormData();
+      formData.append("cover", cover);  // Pastikan cover dikirim sebagai file
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("start_bid", start_bid);
+      formData.append("closed_at", closed_at);
+
+      await api.postAddAucation(formData); // API post menggunakan FormData
+
+      dispatch(addAucationActionCreator(true));
     } catch (error) {
       showErrorDialog(error.message);
     }
@@ -107,7 +116,7 @@ function asyncDeleteAucation(id) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      await api.deleteTodo(id);
+      await api.deleteAucation(id);
       dispatch(deleteAucationActionCreator(true));
     } catch (error) {
       showErrorDialog(error.message);
@@ -120,11 +129,10 @@ function asyncEditAucation(id, title, description, is_closed) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      await api.putUpdateAucation({ id, title, description, is_finished });
+      await api.putUpdateAucation({ id, title, description, is_closed });
 
       const updatedAucation = await api.getDetailAucation(id);
-
-      dispatch(detailAucationActionCreator(updatedTodo));
+      dispatch(detailAucationActionCreator(updatedAucation));
     } catch (error) {
       showErrorDialog(error.message);
     }
@@ -138,6 +146,19 @@ function asyncDetailAucation(id) {
     try {
       const aucation = await api.getDetailAucation(id);
       dispatch(detailAucationActionCreator(aucation));
+    } catch (error) {
+      showErrorDialog(error.message);
+    }
+    dispatch(hideLoading());
+  };
+}
+
+function asyncAddBid({ aucationId, amount }) {
+  return async (dispatch) => {
+    dispatch(showLoading());
+    try {
+      await api.postAddBid({ aucationId, amount });
+      Swal.fire("Berhasil!", "Bid berhasil ditambahkan", "success");
     } catch (error) {
       showErrorDialog(error.message);
     }
@@ -159,4 +180,5 @@ export {
   asyncDetailAucation,
   changeCoverTodoActionCreator,
   asyncChangeCoverTodo,
+  asyncAddBid, // Tambahkan export asyncAddBid
 };
