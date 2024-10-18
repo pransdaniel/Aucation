@@ -22,9 +22,10 @@ function AucationDetailPage() {
   const handleEditAucation = (id, title, description, is_finished) => {
     dispatch(asyncEditAucation(id, title, description, is_finished));
 
+    // eslint-disable-next-line no-undef
     Swal.fire({
       icon: "success",
-      title: "Berhasil mengedit todo!",
+      title: "Berhasil mengedit aucation!",
       showConfirmButton: false,
       timer: 1200,
     });
