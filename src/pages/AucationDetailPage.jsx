@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { asyncDetailAucation, asyncEditAucation } from "../states/todos/action";
+import {
+  asyncDetailAucation,
+  asyncEditAucation,
+} from "../states/aucations/action";
 import AucationDetail from "../components/AucationDetail";
 
 function AucationDetailPage() {

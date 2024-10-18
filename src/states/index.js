@@ -5,12 +5,12 @@ import isPreloadReducer from "./isPreload/reducer";
 import isAuthRegisterReducer from "./isAuthRegister/reducer";
 import isUserChangePhotoReducer from "./isUserChangePhoto/reducer";
 import {
-  todosReducer,
+  aucationsReducer,
   isAddAucationReducer,
-  isDeleteTodoReducer,
-  isEditTodoReducer,
-  detailTodoReducer,
-} from "./todos/reducer";
+  isDeleteAucationReducer,
+  isEditAucationReducer,
+  detailAucationReducer,
+} from "./aucations/reducer";
 
 const store = configureStore({
   reducer: {
@@ -23,12 +23,12 @@ const store = configureStore({
     // Profile
     isUserChangePhoto: isUserChangePhotoReducer,
 
-    // Todo
-    todos: todosReducer,
+    // Aucation
+    aucations: aucationsReducer,
     isAddAucation: isAddAucationReducer,
-    isDeleteTodo: isDeleteTodoReducer,
-    isEditTodo: isEditTodoReducer,
-    detailTodo: detailTodoReducer,
+    isDeleteAucation: isDeleteAucationReducer,
+    isEditAucation: isEditAucationReducer,
+    detailAucation: detailAucationReducer,
   },
 });
 

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   asyncAddAucation,
   addAucationActionCreator,
-} from "../states/todos/action";
+} from "../states/aucations/action";
 import AucationInput from "../components/AucationInput";
 import { useNavigate } from "react-router-dom";
 
@@ -27,8 +27,16 @@ function AucationAddPage() {
     }
   }, [isAddAucation, navigate, dispatch]);
 
-  const onAddAucation = ({ cover, title, description }) => {
-    dispatch(asyncAddAucation({ cover, title, description }));
+  const onAddAucation = ({
+    cover,
+    title,
+    description,
+    start_bid,
+    closed_at,
+  }) => {
+    dispatch(
+      asyncAddAucation({ cover, title, description, start_bid, closed_at })
+    );
   };
 
   return (

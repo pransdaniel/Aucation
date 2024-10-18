@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import TodoList from "../components/TodoList";
 import {
   asyncGetAucations,
-  asyncDeleteTodo,
+  asyncDeleteAucation,
   deleteAucationActionCreator,
-} from "../states/todos/action";
+} from "../states/aucations/action";
 
 function HomePage() {
   const { aucations = [], isDeleteAucation = false } = useSelector(
@@ -31,14 +31,17 @@ function HomePage() {
     dispatch(asyncGetAucations(is_closed));
   }, [dispatch, isDeleteAucation, is_closed]);
 
-  const onDeleteTodo = (id) => {
-    dispatch(asyncDeleteTodo(id));
+  const onDeleteAucation = (id) => {
+    dispatch(asyncDeleteAucation(id));
   };
 
   return (
     <section>
       <div className="container pt-1">
-        <TodoList todos={todos} onDeleteTodo={onDeleteTodo}></TodoList>
+        <TodoList
+          aucations={aucations}
+          onDeleteAucation={onDeleteAucation}
+        ></TodoList>
       </div>
     </section>
   );

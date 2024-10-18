@@ -152,7 +152,7 @@ export {
   addAucationActionCreator,
   asyncAddAucation,
   deleteAucationActionCreator,
-  asyncDeleteTodo,
+  asyncDeleteAucation,
   editAucationActionCreator,
   asyncEditAucation,
   detailAucationActionCreator,

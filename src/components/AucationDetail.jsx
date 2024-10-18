@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { todoItemShape } from "./AucationItem";
+import { aucationItemShape } from "./AucationItem";
 import { postedAt } from "../utils/tools";
 import { FaClock, FaPenToSquare, FaUpload } from "react-icons/fa6";
 import api from "../utils/api";
 import { useDispatch, useSelector } from "react-redux";
-import { asyncDetailAucation } from "../states/todos/action";
+import { asyncDetailAucation } from "../states/aucations/action";
 import { useParams } from "react-router-dom";
 
 function AucationDetail({ aucation, onEditTodo }) {
@@ -32,7 +32,7 @@ function AucationDetail({ aucation, onEditTodo }) {
     if (aucation) {
       setEditedTitle(aucation.title);
       setEditedDescription(aucation.description);
-      setEditedStatus(todo.is_finished);
+      setEditedStatus(aucation.is_finished);
       setPreviewCover(aucation.cover); // Set the existing cover if available
     }
   }, [aucation]);
@@ -219,7 +219,7 @@ function AucationDetail({ aucation, onEditTodo }) {
 }
 
 AucationDetail.propTypes = {
-  aucation: PropTypes.shape(todoItemShape).isRequired,
+  aucation: PropTypes.shape(aucationItemShape).isRequired,
   onEditTodo: PropTypes.func.isRequired,
 };
 
