@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { asyncDetailAucation } from "../states/aucations/action";
 import { useParams } from "react-router-dom";
 
-function AucationDetail({ aucation, onEditTodo }) {
+function AucationDetail({ aucation, onEditAucation }) {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
@@ -19,6 +19,8 @@ function AucationDetail({ aucation, onEditTodo }) {
   const [editedStatus, setEditedStatus] = useState(aucation?.is_finished || 0);
   const [previewCover, setPreviewCover] = useState(aucation?.cover || null); // Default to existing cover
   const [isUploading, setIsUploading] = useState(false);
+  const [closedAt, setClosedAt] = useState("");
+  const [startBid, setStartBid] = useState("");
 
   const fileInputRef = useRef(null);
 
@@ -65,8 +67,16 @@ function AucationDetail({ aucation, onEditTodo }) {
     fileInputRef.current.click();
   };
 
+  function handleStartBid({ target }) {
+    setStartBid(target.value);
+  }
+
+  function handleClosedAt({ target }) {
+    setClosedAt(target.value);
+  }
+
   const handleSaveChanges = () => {
-    onEditTodo(aucation.id, editedTitle, editedDescription, editedStatus);
+    onEditAucation(aucation.id, editedTitle, editedDescription, editedStatus, closedAt, startBid);
     setIsEditing(false);
   };
 
@@ -185,17 +195,30 @@ function AucationDetail({ aucation, onEditTodo }) {
 
                   <div className="mb-3">
                     <label htmlFor="editStatus" className="form-label">
-                      Edit Status
+                      Edit Start Bid
                     </label>
-                    <select
-                      className="form-select"
-                      id="editStatus"
-                      value={editedStatus}
-                      onChange={(e) => setEditedStatus(Number(e.target.value))}
-                    >
-                      <option value={1}>Selesai</option>
-                      <option value={0}>Belum Selesai</option>
-                    </select>
+                    <input
+              type="number"
+              id="inputStartBid"
+              onChange={handleStartBid}
+              value={startBid}
+              className="form-control"
+              required
+            />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="editStatus" className="form-label">
+                      Edit Closed At
+                    </label>
+                    <input
+              type="datetime-local"
+              id="inputClosedAt"
+              onChange={handleClosedAt}
+              value={closedAt}
+              className="form-control"
+              required
+            />
                   </div>
 
                   <div className="d-flex justify-content-end">
@@ -220,7 +243,7 @@ function AucationDetail({ aucation, onEditTodo }) {
 
 AucationDetail.propTypes = {
   aucation: PropTypes.shape(aucationItemShape).isRequired,
-  onEditTodo: PropTypes.func.isRequired,
+  onEditAucation: PropTypes.func.isRequired,
 };
 
 export default AucationDetail;
