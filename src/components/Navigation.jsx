@@ -10,7 +10,7 @@ function Navigation({ authLogin, onAuthSignOut }) {
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/">
-            Todo App
+            Aucation App
           </Link>
           <button
             className="navbar-toggler"
@@ -30,7 +30,7 @@ function Navigation({ authLogin, onAuthSignOut }) {
                   className="btn btn-light btn-sm text-dark"
                   to="/aucation/add"
                 >
-                  <FaPlus /> Buat Todo
+                  <FaPlus /> Buat Aucation
                 </Link>
               </li>
               <li className="nav-item dropdown">
