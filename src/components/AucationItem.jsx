@@ -46,6 +46,7 @@ function AucationItem({ aucation, onDeleteAucation }) {
             <button
               type="button"
               onClick={() => {
+                // eslint-disable-next-line no-undef
                 Swal.fire({
                   title: "Hapus Aucation",
                   text: `Apakah kamu yakin ingin menghapus Aucation: ${aucation.title}?`,

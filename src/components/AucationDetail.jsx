@@ -4,7 +4,7 @@ import { aucationItemShape } from "./AucationItem";
 import { postedAt } from "../utils/tools";
 import { FaClock, FaPenToSquare, FaUpload } from "react-icons/fa6";
 import api from "../utils/api";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { asyncDetailAucation } from "../states/aucations/action";
 import { useParams } from "react-router-dom";
 
@@ -16,8 +16,8 @@ function AucationDetail({ aucation, onEditTodo }) {
   const [editedDescription, setEditedDescription] = useState(
     aucation?.description || ""
   );
-  const [editedStatus, setEditedStatus] = useState(todo?.is_finished || 0);
-  const [previewCover, setPreviewCover] = useState(todo?.cover || null); // Default to existing cover
+  const [editedStatus, setEditedStatus] = useState(aucation?.is_finished || 0);
+  const [previewCover, setPreviewCover] = useState(aucation?.cover || null); // Default to existing cover
   const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef(null);
@@ -50,11 +50,11 @@ function AucationDetail({ aucation, onEditTodo }) {
     setIsUploading(true);
     try {
       const message = await api.postChangeCoverTodo({
-        id: todo.id,
+        id: aucation.id,
         cover: file,
       });
       console.log("Cover updated:", message);
-      dispatch(asyncDetailAucation(todo.id)); // Refresh the todo after upload
+      dispatch(asyncDetailAucation(aucation.id)); // Refresh the todo after upload
     } catch (error) {
       console.error("Failed to upload cover:", error.message);
     }
@@ -66,14 +66,14 @@ function AucationDetail({ aucation, onEditTodo }) {
   };
 
   const handleSaveChanges = () => {
-    onEditTodo(todo.id, editedTitle, editedDescription, editedStatus);
+    onEditTodo(aucation.id, editedTitle, editedDescription, editedStatus);
     setIsEditing(false);
   };
 
-  let badgeStatus = todo.is_finished
+  let badgeStatus = aucation.is_finished
     ? "badge bg-success text-white ms-3"
     : "badge bg-warning text-dark ms-3";
-  let badgeLabel = todo.is_finished ? "Selesai" : "Belum Selesai";
+  let badgeLabel = aucation.is_finished ? "Selesai" : "Belum Selesai";
 
   return (
     <div className="card mt-3">
@@ -149,7 +149,7 @@ function AucationDetail({ aucation, onEditTodo }) {
             <div className="col-12">
               <div className="text-sm op-5">
                 <FaClock />
-                <span className="ps-2">{postedAt(todo.created_at)}</span>
+                <span className="ps-2">{postedAt(aucation.created_at)}</span>
               </div>
             </div>
 
