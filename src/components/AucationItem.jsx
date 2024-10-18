@@ -3,6 +3,20 @@ import { Link } from "react-router-dom";
 import { postedAt } from "../utils/tools";
 import { FaClock, FaTrash } from "react-icons/fa6";
 
+// Define aucationItemShape
+const aucationItemShape = {
+  id: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  start_bid: PropTypes.number,
+  closed_at: PropTypes.string,
+  created_at: PropTypes.string.isRequired,
+  is_closed: PropTypes.bool.isRequired,
+};
+
+// Ensure aucationItemShape is exported
+export { aucationItemShape };
+
 function AucationItem({ aucation, onDeleteAucation }) {
   let badgeStatus, badgeLabel;
   if (aucation.is_closed) {
@@ -23,7 +37,6 @@ function AucationItem({ aucation, onDeleteAucation }) {
                 {aucation.title}
               </Link>
             </h5>
-
             <div>
               <span className={badgeStatus}>{badgeLabel}</span>
             </div>
@@ -33,10 +46,9 @@ function AucationItem({ aucation, onDeleteAucation }) {
             <button
               type="button"
               onClick={() => {
-                // eslint-disable-next-line no-undef
                 Swal.fire({
                   title: "Hapus Aucation",
-                  text: `Apakah kamu yakin ingin mehapus Aucation: ${aucation.title}?`,
+                  text: `Apakah kamu yakin ingin menghapus Aucation: ${aucation.title}?`,
                   icon: "warning",
                   showCancelButton: true,
                   confirmButtonText: "Ya, Tetap Hapus",
@@ -56,7 +68,20 @@ function AucationItem({ aucation, onDeleteAucation }) {
               <FaTrash /> Hapus
             </button>
           </div>
-          <div className="col-12">
+
+          <div className="col-12 mt-3">
+            <img
+              src={aucation.cover}
+              alt="Cover"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "150px",
+                objectFit: "cover",
+              }}
+            />
+            <p><strong>Description:</strong> {aucation.description}</p>
+            <p><strong>Starting Bid:</strong> {aucation.start_bid}</p>
+            <p><strong>Closed At:</strong> {new Date(aucation.closed_at).toLocaleString()}</p>
             <div className="text-sm op-5">
               <FaClock />
               <span className="ps-2">{postedAt(aucation.created_at)}</span>
@@ -68,21 +93,10 @@ function AucationItem({ aucation, onDeleteAucation }) {
   );
 }
 
-const aucationItemShape = {
-  id: PropTypes.number.isRequired,
-  title: PropTypes.string.isRequired,
-  is_finished: PropTypes.number.isRequired,
-  cover: PropTypes.string,
-  created_at: PropTypes.string.isRequired,
-  updated_at: PropTypes.string.isRequired,
-};
-
+// Define propTypes for AucationItem
 AucationItem.propTypes = {
   aucation: PropTypes.shape(aucationItemShape).isRequired,
   onDeleteAucation: PropTypes.func.isRequired,
 };
-
-// eslint-disable-next-line react-refresh/only-export-components
-export { aucationItemShape };
 
 export default AucationItem;

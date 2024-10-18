@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import TodoList from "../components/TodoList";
+import TodoList from "../components/AucationList";
 import {
   asyncGetAucations,
   asyncDeleteAucation,
