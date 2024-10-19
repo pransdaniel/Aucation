@@ -121,6 +121,9 @@ function AucationItem({ aucation, onDeleteAucation, onAddBid }) {
               <strong>Closed At:</strong>{" "}
               {new Date(aucation.closed_at).toLocaleString()}
             </p>
+            <p>
+              <strong> Bid:</strong> {aucation.amount}
+            </p>
             <div className="text-sm op-5">
               <FaClock />
               <span className="ps-2">{postedAt(aucation.created_at)}</span>
