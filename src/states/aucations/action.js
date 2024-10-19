@@ -7,6 +7,7 @@ const ActionType = {
   ADD_AUCATION: "ADD_AUCATION",
   DELETE_AUCATION: "DELETE_AUCATION",
   EDIT_AUCATION: "EDIT_AUCATION",
+  DETAIL_AUCATION: "DETAIL_AUCATION",
 };
 
 function getAucationsActionCreator(aucations) {
