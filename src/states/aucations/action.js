@@ -127,14 +127,21 @@ function asyncDeleteAucation(id) {
   };
 }
 
-function asyncEditAucation(id, title, description, is_closed) {
+function asyncEditAucation({ id, title, description, start_bid, closed_at }, navigate) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      await api.putUpdateAucation({ id, title, description, is_closed });
+      await api.putUpdateAucation({
+        id, // Ini yang benar
+        title,
+        description,
+        start_bid,
+        closed_at,
+      });
 
       const updatedAucation = await api.getDetailAucation(id);
       dispatch(detailAucationActionCreator(updatedAucation));
+      navigate("/"); // Redirect setelah sukses
     } catch (error) {
       showErrorDialog(error.message);
     }

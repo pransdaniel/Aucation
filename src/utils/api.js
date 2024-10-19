@@ -123,10 +123,10 @@ const api = (() => {
 
     const responseJson = await response.json();
     if (!response.ok) {
-      throw new Error(responseJson.message || "Failed to create auction");
+      throw new Error(responseJson.message || "Failed to create Aucation");
     }
 
-    return responseJson.data.auction_id;
+    return responseJson.data.Aucation_id;
   }
 
   // Change Aucation Cover
@@ -168,37 +168,31 @@ const api = (() => {
   }
 
   // Update Aucation
-  async function putUpdateAucation({
-    cover,
-    id,
-    title,
-    description,
-    start_bid,
-    closed_at,
-    is_closed,
-  }) {
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("start_bid", start_bid);
-    formData.append("closed_at", closed_at);
-    formData.append("is_closed", is_closed);
-    if (cover instanceof File) {
-      formData.append("cover", cover); // Jika cover diupdate
-    }
-
-    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${id}`, {
-      method: "PUT",
-      body: formData,
+  async function putUpdateAucation({ id, title, description, start_bid, closed_at }) {
+    const bodyData = new URLSearchParams({
+      title,
+      description,
+      start_bid,
+      closed_at,
     });
-
+  
+    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${id}`, { // Pastikan id di sini adalah string
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: bodyData,
+    });
+  
     const responseJson = await response.json();
-    if (!responseJson.success) {
-      throw new Error(responseJson.message);
+  
+    if (!response.ok) {
+      throw new Error(responseJson.message || "Failed to update Aucation");
     }
-
-    return responseJson.message;
+  
+    return responseJson;
   }
+  
 
   // Delete Aucation
   async function deleteAucation(id) {

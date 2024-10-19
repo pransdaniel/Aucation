@@ -1,43 +1,44 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { aucationItemShape } from "./AucationItem";
 import { postedAt } from "../utils/tools";
 import { FaClock, FaPenToSquare, FaUpload } from "react-icons/fa6";
 import api from "../utils/api";
-import { useDispatch } from "react-redux";
-import { asyncDetailAucation } from "../states/aucations/action";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { asyncDetailAucation, asyncEditAucation } from "../states/aucations/action";
+import { useParams, useNavigate } from "react-router-dom";
 
 function AucationDetail({ aucation, onEditAucation }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { detailAucation } = useSelector((state) => state);
+
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(aucation?.title || "");
-  const [editedDescription, setEditedDescription] = useState(
-    aucation?.description || ""
-  );
-  const [editedStatus, setEditedStatus] = useState(aucation?.is_finished || 0);
-  const [previewCover, setPreviewCover] = useState(aucation?.cover || null); // Default to existing cover
-  const [isUploading, setIsUploading] = useState(false);
-  const [closedAt, setClosedAt] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [startBid, setStartBid] = useState("");
+  const [closedAt, setClosedAt] = useState("");
+  const [previewCover, setPreviewCover] = useState(null); // Default to existing cover
+  const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (id) {
-      dispatch(asyncDetailAucation(id)); // Fetch the current todo details
+      dispatch(asyncDetailAucation(id)); // Fetch the current Aucation details
     }
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (aucation) {
-      setEditedTitle(aucation.title);
-      setEditedDescription(aucation.description);
-      setEditedStatus(aucation.is_finished);
-      setPreviewCover(aucation.cover); // Set the existing cover if available
+    if (detailAucation) {
+      setTitle(detailAucation.title);
+      setDescription(detailAucation.description);
+      setStartBid(detailAucation.start_bid);
+      setClosedAt(detailAucation.closed_at ? detailAucation.closed_at.slice(0, 10) : ""); // Extract the date part only
+      setPreviewCover(detailAucation.cover); // Set the existing cover if available
     }
-  }, [aucation]);
+  }, [detailAucation]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -52,11 +53,11 @@ function AucationDetail({ aucation, onEditAucation }) {
     setIsUploading(true);
     try {
       const message = await api.postChangeCoverAucation({
-        id: aucation.id,
+        id: detailAucation.id,
         cover: file,
       });
       console.log("Cover updated:", message);
-      dispatch(asyncDetailAucation(aucation.id)); // Refresh the todo after upload
+      dispatch(asyncDetailAucation(detailAucation.id)); // Refresh the Aucation after upload
     } catch (error) {
       console.error("Failed to upload cover:", error.message);
     }
@@ -67,23 +68,29 @@ function AucationDetail({ aucation, onEditAucation }) {
     fileInputRef.current.click();
   };
 
-  function handleStartBid({ target }) {
-    setStartBid(target.value);
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const fullClosedAt = `${closedAt} 23:59:59`; // Add default time to closedAt
 
-  function handleClosedAt({ target }) {
-    setClosedAt(target.value);
-  }
-
-  const handleSaveChanges = () => {
-    onEditAucation(aucation.id, editedTitle, editedDescription, editedStatus, closedAt, startBid);
+    dispatch(
+      asyncEditAucation(
+        {
+          id,
+          title,
+          description,
+          start_bid: startBid,
+          closed_at: fullClosedAt,
+        },
+        navigate
+      )
+    );
     setIsEditing(false);
   };
 
-  let badgeStatus = aucation.is_finished
+  let badgeStatus = detailAucation?.is_finished
     ? "badge bg-success text-white ms-3"
     : "badge bg-warning text-dark ms-3";
-  let badgeLabel = aucation.is_finished ? "Selesai" : "Belum Selesai";
+  let badgeLabel = detailAucation?.is_finished ? "Selesai" : "Belum Selesai";
 
   return (
     <div className="card mt-3">
@@ -119,21 +126,17 @@ function AucationDetail({ aucation, onEditAucation }) {
           )}
         </div>
 
-        {/* Todo Details */}
         <div className="row align-items-center">
           <div className="col-12">
             <div className="d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <h5 className="mb-0">{aucation.title}</h5>
+                <h5 className="mb-0">{detailAucation?.title}</h5>
                 <span className={`${badgeStatus} ms-2`}>{badgeLabel}</span>
               </div>
 
               <div>
                 {/* Update Cover Button */}
-                <button
-                  className="btn btn-outline-primary me-2"
-                  onClick={handleUploadClick}
-                >
+                <button className="btn btn-outline-primary me-2" onClick={handleUploadClick}>
                   <FaUpload /> {isUploading ? "Uploading..." : "Update Cover"}
                 </button>
 
@@ -159,7 +162,7 @@ function AucationDetail({ aucation, onEditAucation }) {
             <div className="col-12">
               <div className="text-sm op-5">
                 <FaClock />
-                <span className="ps-2">{postedAt(aucation.created_at)}</span>
+                <span className="ps-2">{postedAt(detailAucation?.created_at)}</span>
               </div>
             </div>
 
@@ -167,7 +170,7 @@ function AucationDetail({ aucation, onEditAucation }) {
 
             <div className="col-12 mt-3">
               {isEditing ? (
-                <div>
+                <form onSubmit={handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="editTitle" className="form-label">
                       Edit Title
@@ -176,8 +179,8 @@ function AucationDetail({ aucation, onEditAucation }) {
                       type="text"
                       className="form-control"
                       id="editTitle"
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
                     />
                   </div>
                   <div className="mb-3">
@@ -188,50 +191,47 @@ function AucationDetail({ aucation, onEditAucation }) {
                       className="form-control"
                       id="editDescription"
                       rows="3"
-                      value={editedDescription}
-                      onChange={(e) => setEditedDescription(e.target.value)}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="editStatus" className="form-label">
+                    <label htmlFor="editStartBid" className="form-label">
                       Edit Start Bid
                     </label>
                     <input
-              type="number"
-              id="inputStartBid"
-              onChange={handleStartBid}
-              value={startBid}
-              className="form-control"
-              required
-            />
+                      type="number"
+                      id="editStartBid"
+                      value={startBid}
+                      onChange={(e) => setStartBid(e.target.value)}
+                      className="form-control"
+                      required
+                    />
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="editStatus" className="form-label">
+                    <label htmlFor="editClosedAt" className="form-label">
                       Edit Closed At
                     </label>
                     <input
-              type="datetime-local"
-              id="inputClosedAt"
-              onChange={handleClosedAt}
-              value={closedAt}
-              className="form-control"
-              required
-            />
+                      type="date"
+                      id="editClosedAt"
+                      value={closedAt}
+                      onChange={(e) => setClosedAt(e.target.value)}
+                      className="form-control"
+                      required
+                    />
                   </div>
 
                   <div className="d-flex justify-content-end">
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleSaveChanges}
-                    >
+                    <button type="submit" className="btn btn-primary">
                       Save
                     </button>
                   </div>
-                </div>
+                </form>
               ) : (
-                <div>{aucation.description}</div>
+                <div>{detailAucation?.description}</div>
               )}
             </div>
           </div>
