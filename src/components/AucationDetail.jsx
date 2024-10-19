@@ -5,7 +5,10 @@ import { postedAt } from "../utils/tools";
 import { FaClock, FaPenToSquare, FaUpload } from "react-icons/fa6";
 import api from "../utils/api";
 import { useDispatch, useSelector } from "react-redux";
-import { asyncDetailAucation, asyncEditAucation } from "../states/aucations/action";
+import {
+  asyncDetailAucation,
+  asyncEditAucation,
+} from "../states/aucations/action";
 import { useParams, useNavigate } from "react-router-dom";
 
 function AucationDetail({ aucation, onEditAucation }) {
@@ -19,7 +22,7 @@ function AucationDetail({ aucation, onEditAucation }) {
   const [description, setDescription] = useState("");
   const [startBid, setStartBid] = useState("");
   const [closedAt, setClosedAt] = useState("");
-  const [previewCover, setPreviewCover] = useState(null); // Default to existing cover
+  const [previewCover, setPreviewCover] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef(null);
@@ -35,8 +38,10 @@ function AucationDetail({ aucation, onEditAucation }) {
       setTitle(detailAucation.title);
       setDescription(detailAucation.description);
       setStartBid(detailAucation.start_bid);
-      setClosedAt(detailAucation.closed_at ? detailAucation.closed_at.slice(0, 10) : ""); // Extract the date part only
-      setPreviewCover(detailAucation.cover); // Set the existing cover if available
+      setClosedAt(
+        detailAucation.closed_at ? detailAucation.closed_at.slice(0, 10) : ""
+      );
+      setPreviewCover(detailAucation.cover);
     }
   }, [detailAucation]);
 
@@ -44,8 +49,8 @@ function AucationDetail({ aucation, onEditAucation }) {
     const file = event.target.files[0];
     if (file) {
       const previewURL = URL.createObjectURL(file);
-      setPreviewCover(previewURL); // Show the preview immediately
-      handleCoverUpload(file); // Upload the cover
+      setPreviewCover(previewURL);
+      handleCoverUpload(file);
     }
   };
 
@@ -70,7 +75,6 @@ function AucationDetail({ aucation, onEditAucation }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const fullClosedAt = `${closedAt} 23:59:59`; // Add default time to closedAt
 
     dispatch(
       asyncEditAucation(
@@ -79,7 +83,7 @@ function AucationDetail({ aucation, onEditAucation }) {
           title,
           description,
           start_bid: startBid,
-          closed_at: fullClosedAt,
+          closed_at: closedAt,
         },
         navigate
       )
@@ -136,7 +140,10 @@ function AucationDetail({ aucation, onEditAucation }) {
 
               <div>
                 {/* Update Cover Button */}
-                <button className="btn btn-outline-primary me-2" onClick={handleUploadClick}>
+                <button
+                  className="btn btn-outline-primary me-2"
+                  onClick={handleUploadClick}
+                >
                   <FaUpload /> {isUploading ? "Uploading..." : "Update Cover"}
                 </button>
 
@@ -162,7 +169,9 @@ function AucationDetail({ aucation, onEditAucation }) {
             <div className="col-12">
               <div className="text-sm op-5">
                 <FaClock />
-                <span className="ps-2">{postedAt(detailAucation?.created_at)}</span>
+                <span className="ps-2">
+                  {postedAt(detailAucation?.created_at)}
+                </span>
               </div>
             </div>
 
@@ -215,7 +224,7 @@ function AucationDetail({ aucation, onEditAucation }) {
                       Edit Closed At
                     </label>
                     <input
-                      type="date"
+                      type="datetime-local"
                       id="editClosedAt"
                       value={closedAt}
                       onChange={(e) => setClosedAt(e.target.value)}
