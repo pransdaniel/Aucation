@@ -11,7 +11,7 @@ import {
 } from "../states/aucations/action";
 import { useParams, useNavigate } from "react-router-dom";
 
-function AucationDetail({ aucation, onEditAucation }) {
+function AucationDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
