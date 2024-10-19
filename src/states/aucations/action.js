@@ -6,7 +6,6 @@ const ActionType = {
   GET_AUCATIONS: "GET_AUCATIONS",
   ADD_AUCATION: "ADD_AUCATION",
   DELETE_AUCATION: "DELETE_AUCATION",
-  DETAIL_AUCATION: "DETAIL_AUCATION",
   EDIT_AUCATION: "EDIT_AUCATION",
 };
 
@@ -91,20 +90,22 @@ function asyncGetAucations() {
 }
 
 // Perbaikan pada asyncAddAucation untuk menangani FormData
-function asyncAddAucation({ cover, title, description, start_bid, closed_at }) {
+function asyncAddAucation(
+  { title, description, start_bid, closed_at, cover },
+  navigate
+) {
   return async (dispatch) => {
     dispatch(showLoading());
     try {
-      const formData = new FormData();
-      formData.append("cover", cover);  // Pastikan cover dikirim sebagai file
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("start_bid", start_bid);
-      formData.append("closed_at", closed_at);
-
-      await api.postAddAucation(formData); // API post menggunakan FormData
-
+      await api.postAddAucation({
+        title,
+        description,
+        start_bid,
+        closed_at,
+        cover,
+      });
       dispatch(addAucationActionCreator(true));
+      navigate("/"); // Redirect to homepage after successful addition
     } catch (error) {
       showErrorDialog(error.message);
     }

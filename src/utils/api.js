@@ -1,6 +1,6 @@
 const api = (() => {
   const BASE_URL = "https://public-api.delcom.org/api/v1";
-  
+
   // Helper untuk fetch dengan Auth
   async function _fetchWithAuth(url, options = {}) {
     return fetch(url, {
@@ -58,7 +58,9 @@ const api = (() => {
     if (!success) {
       throw new Error(message);
     }
-    const { data: { token } } = responseJson;
+    const {
+      data: { token },
+    } = responseJson;
     return token;
   }
 
@@ -70,7 +72,9 @@ const api = (() => {
     if (!success) {
       throw new Error(message);
     }
-    const { data: { user } } = responseJson;
+    const {
+      data: { user },
+    } = responseJson;
     return user;
   }
 
@@ -91,25 +95,38 @@ const api = (() => {
   }
 
   // Add Aucation with FormData
-  async function postAddAucation({ title, description, start_bid, closed_at, cover }) {
+  async function postAddAucation({
+    title,
+    description,
+    start_bid,
+    closed_at,
+    cover,
+  }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("start_bid", start_bid);
     formData.append("closed_at", closed_at);
-    formData.append("cover", cover); // Menambahkan cover ke FormData
+    formData.append("cover", cover);
+
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value); // Optional logging for debugging
+    });
 
     const response = await _fetchWithAuth(`${BASE_URL}/aucations`, {
       method: "POST",
-      body: formData, // Menggunakan FormData, jangan set Content-Type secara manual
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+      body: formData,
     });
 
     const responseJson = await response.json();
-    if (!responseJson.success) {
-      throw new Error(responseJson.message);
+    if (!response.ok) {
+      throw new Error(responseJson.message || "Failed to create auction");
     }
 
-    return responseJson.data.aucation_id;
+    return responseJson.data.auction_id;
   }
 
   // Change Aucation Cover
@@ -130,16 +147,19 @@ const api = (() => {
 
   // Add Bid to Aucation
   async function postAddBid({ aucationId, amount }) {
-    const response = await _fetchWithAuth(`${BASE_URL}/aucations/${aucationId}/bids`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount,
-      }),
-    });
-  
+    const response = await _fetchWithAuth(
+      `${BASE_URL}/aucations/${aucationId}/bids`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount,
+        }),
+      }
+    );
+
     const responseJson = await response.json();
     if (!responseJson.success) {
       throw new Error(responseJson.message);
@@ -224,7 +244,7 @@ const api = (() => {
     postChangePhotoProfile,
     postAddAucation,
     postChangeCoverAucation,
-    postAddBid, // Tambahkan fungsi 
+    postAddBid, // Tambahkan fungsi
     putUpdateAucation,
     deleteAucation,
     getAllAucations,
