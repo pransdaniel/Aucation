@@ -21,27 +21,29 @@ export { aucationItemShape };
 function AucationItem({ aucation, onDeleteAucation, onAddBid }) {
   let badgeStatus, badgeLabel;
   if (aucation.is_closed) {
-    badgeStatus = "badge bg-success text-white ms-3";
-    badgeLabel = "Selesai";
+    badgeStatus = "";
+    badgeLabel = "";
   } else {
-    badgeStatus = "badge bg-warning text-dark ms-3";
-    badgeLabel = "Belum Selesai";
+    badgeStatus = "";
+    badgeLabel = "";
   }
 
   const handleAddBid = () => {
     Swal.fire({
-      title: 'Tambah Bid',
-      input: 'number',
-      inputLabel: 'Masukkan jumlah bid',
+      title: "Tambah Bid",
+      input: "number",
+      inputLabel: "Masukkan jumlah bid",
       inputAttributes: {
         min: aucation.start_bid,
       },
       showCancelButton: true,
-      confirmButtonText: 'Bid',
+      confirmButtonText: "Bid",
       showLoaderOnConfirm: true,
       preConfirm: (amount) => {
         if (!amount || amount < aucation.start_bid) {
-          Swal.showValidationMessage(`Jumlah bid harus lebih dari ${aucation.start_bid}`);
+          Swal.showValidationMessage(
+            `Jumlah bid harus lebih dari ${aucation.start_bid}`
+          );
           return;
         }
         return onAddBid(aucation.id, parseFloat(amount));
@@ -109,9 +111,16 @@ function AucationItem({ aucation, onDeleteAucation, onAddBid }) {
                 objectFit: "cover",
               }}
             />
-            <p><strong>Description:</strong> {aucation.description}</p>
-            <p><strong>Starting Bid:</strong> {aucation.start_bid}</p>
-            <p><strong>Closed At:</strong> {new Date(aucation.closed_at).toLocaleString()}</p>
+            <p>
+              <strong>Description:</strong> {aucation.description}
+            </p>
+            <p>
+              <strong>Starting Bid:</strong> {aucation.start_bid}
+            </p>
+            <p>
+              <strong>Closed At:</strong>{" "}
+              {new Date(aucation.closed_at).toLocaleString()}
+            </p>
             <div className="text-sm op-5">
               <FaClock />
               <span className="ps-2">{postedAt(aucation.created_at)}</span>

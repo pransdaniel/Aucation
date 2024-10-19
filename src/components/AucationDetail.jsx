@@ -51,7 +51,7 @@ function AucationDetail({ aucation, onEditAucation }) {
   const handleCoverUpload = async (file) => {
     setIsUploading(true);
     try {
-      const message = await api.postChangeCoverTodo({
+      const message = await api.postChangeCoverAucation({
         id: aucation.id,
         cover: file,
       });
