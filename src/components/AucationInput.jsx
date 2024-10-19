@@ -8,35 +8,48 @@ function AucationInput({ onAddAucation }) {
   const [closedAt, setClosedAt] = useState("");
   const [cover, setCover] = useState(null); // Menyimpan file cover
   const [previewCover, setPreviewCover] = useState(null); // Pratinjau gambar cover
+  const [formError, setFormError] = useState(""); // State untuk error message
 
   // Fungsi yang akan dijalankan ketika form disubmit
   function handleOnAddAucation(e) {
     e.preventDefault(); // Mencegah refresh halaman
+
+    // Tambahkan validasi untuk memastikan startBid adalah angka
+    const bidValue = parseFloat(startBid);
+    if (isNaN(bidValue) || bidValue <= 0) {
+      setFormError("Start bid harus berupa angka positif.");
+      return;
+    }
+
+    const fullClosedAt = `${closedAt}:00`; // Tambahkan detik ke waktu closedAt
+
     // Validasi apakah semua field terisi
-    const fullClosedAt = `${closedAt} 23:59:59`; // Tambahkan waktu default ke closedAt
-    if (title.trim() && description.trim() && startBid && closedAt && cover) {
+    if (title.trim() && description.trim() && bidValue && closedAt && cover) {
       const aucationData = {
-        cover, // Kirim file cover yang dipilih
         title,
         description,
-        start_bid: startBid,
+        start_bid: bidValue, // Pastikan startBid dalam format angka
         closed_at: fullClosedAt, // Biarkan closedAt tetap sebagai string ISO
+        cover, // Kirim file cover yang dipilih
       };
       onAddAucation(aucationData); // Kirim data ke parent (AucationAddPage)
+      setFormError(""); // Reset error message jika data valid
     } else {
-      console.error(
-        "Form tidak valid, pastikan semua field diisi dengan benar."
-      );
+      setFormError("Form tidak valid, pastikan semua field diisi dengan benar.");
     }
   }
 
-  // Handler untuk closed at input
-
   // Handler untuk cover input (file gambar)
-  function handleFileChange(e) {
-    const selectedFile = e.target.files[0]; // Ambil file dari input
-    setCover(selectedFile); // Simpan file ke state cover
-    console.log("File selected:", selectedFile); // Logging untuk debugging
+  function handleCover({ target }) {
+    const file = target.files[0];
+    if (file) {
+      setCover(file); // Simpan file ke state
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewCover(reader.result); // Set pratinjau gambar
+      };
+      reader.readAsDataURL(file); // Konversi gambar untuk pratinjau
+    }
   }
 
   return (
@@ -44,6 +57,7 @@ function AucationInput({ onAddAucation }) {
       <div className="card-body">
         <h3 className="ps-2">Tambahkan Aucation</h3>
         <hr />
+        {formError && <p className="text-danger">{formError}</p>} {/* Tampilkan pesan error */}
         <form onSubmit={handleOnAddAucation}>
           {/* Preview Cover */}
           <div
@@ -78,14 +92,12 @@ function AucationInput({ onAddAucation }) {
 
           {/* Upload Cover */}
           <div className="mb-3">
-            <label htmlFor="inputCover" className="form-label">
-              Upload Cover Image
-            </label>
+            <label htmlFor="inputCover" className="form-label">Upload Cover Image</label>
             <input
               type="file"
               id="inputCover"
+              onChange={handleCover}
               accept="image/*"
-              onChange={handleFileChange}
               className="form-control"
               required
             />
@@ -93,9 +105,7 @@ function AucationInput({ onAddAucation }) {
 
           {/* Title Input */}
           <div className="mb-3">
-            <label htmlFor="inputTitle" className="form-label">
-              Judul
-            </label>
+            <label htmlFor="inputTitle" className="form-label">Judul</label>
             <div className="input-group">
               <input
                 type="text"
@@ -111,9 +121,7 @@ function AucationInput({ onAddAucation }) {
 
           {/* Description Input */}
           <div>
-            <label htmlFor="inputDescription" className="form-label">
-              Deskripsi
-            </label>
+            <label htmlFor="inputDescription" className="form-label">Deskripsi</label>
             <textarea
               rows="5"
               id="inputDescription"
@@ -127,9 +135,7 @@ function AucationInput({ onAddAucation }) {
 
           {/* Start Bid Input */}
           <div className="mb-3">
-            <label htmlFor="inputStartBid" className="form-label">
-              Start Bid (in numbers)
-            </label>
+            <label htmlFor="inputStartBid" className="form-label">Start Bid (in numbers)</label>
             <input
               type="number"
               id="inputStartBid"
@@ -142,11 +148,9 @@ function AucationInput({ onAddAucation }) {
 
           {/* Closed At Input */}
           <div className="mb-3">
-            <label htmlFor="inputClosedAt" className="form-label">
-              Closed At
-            </label>
+            <label htmlFor="inputClosedAt" className="form-label">Closed At</label>
             <input
-              type="date"
+              type="datetime-local"
               id="inputClosedAt"
               onChange={(e) => setClosedAt(e.target.value)}
               value={closedAt}
@@ -157,9 +161,7 @@ function AucationInput({ onAddAucation }) {
 
           {/* Submit Button */}
           <div className="mb-4 text-end mt-3">
-            <button type="submit" className="btn btn-primary">
-              Simpan
-            </button>
+            <button type="submit" className="btn btn-primary">Simpan</button>
           </div>
         </form>
       </div>

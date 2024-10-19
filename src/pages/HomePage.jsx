@@ -23,7 +23,7 @@ function HomePage() {
       // eslint-disable-next-line no-undef
       Swal.fire({
         icon: "success",
-        title: "Todo berhasil dihapus!",
+        title: "Aucation berhasil dihapus!",
         showConfirmButton: false,
         timer: 700,
       });
